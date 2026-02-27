@@ -4,6 +4,7 @@ import type {
     CreateBlogPayload,
     UpdateBlogPayload,
     PaginationParams,
+    FeedResponse,
 } from "@/lib/types";
 
 export const blogService = {
@@ -17,5 +18,7 @@ export const blogService = {
     getBySlug: (slug: string) => api.get<Blog>(`/public/blog/${slug}`),
 
     getPublicFeed: (params?: PaginationParams) =>
-        api.get("/public/feed", { params }),
+        api.get<FeedResponse>("/public/feed", { params }),
+
+    getUserBlogs: () => api.get<Blog[]>("/dashboard/blogs"),
 };

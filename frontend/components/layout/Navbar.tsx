@@ -13,17 +13,24 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Menu, LogOut, LayoutDashboard, User } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export function Navbar() {
     const { isAuthenticated, user, logout } = useAuthStore();
     const router = useRouter();
     const [mobileOpen, setMobileOpen] = useState(false);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const handleLogout = () => {
         logout();
         router.push("/");
     };
+
+    const showAuth = mounted && isAuthenticated;
 
     return (
         <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -39,7 +46,7 @@ export function Navbar() {
                         <Link href="/feed">Feed</Link>
                     </Button>
 
-                    {isAuthenticated ? (
+                    {showAuth ? (
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button
@@ -97,7 +104,7 @@ export function Navbar() {
                         >
                             Feed
                         </Link>
-                        {isAuthenticated ? (
+                        {showAuth ? (
                             <>
                                 <Link
                                     href="/dashboard"

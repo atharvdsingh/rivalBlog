@@ -21,10 +21,9 @@ export default function FeedPage() {
             blogService.getPublicFeed({ limit: PAGE_SIZE, offset: page * PAGE_SIZE }),
     });
 
-    const blogs: Blog[] = Array.isArray(data?.data)
-        ? data.data
-        : data?.data?.data ?? [];
-    const total = data?.data?.total ?? 0;
+    const feedResponse = data?.data;
+    const blogs: Blog[] = feedResponse?.data ?? [];
+    const total = feedResponse?.total ?? 0;
     const hasNext = (page + 1) * PAGE_SIZE < total;
 
     return (
@@ -65,7 +64,6 @@ export default function FeedPage() {
                         ))}
                     </div>
 
-                    {/* Pagination */}
                     <div className="mt-8 flex items-center justify-center gap-4">
                         <Button
                             variant="outline"

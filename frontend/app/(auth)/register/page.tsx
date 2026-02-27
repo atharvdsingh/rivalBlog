@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -8,10 +8,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { authService } from "@/services/auth.service";
+import { useAuthStore } from "@/store/auth-store";
 import { Loader2 } from "lucide-react";
 
 export default function RegisterPage() {
     const router = useRouter();
+    const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+
+    useEffect(() => {
+        if (isAuthenticated) router.push("/dashboard");
+    }, [isAuthenticated, router]);
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");

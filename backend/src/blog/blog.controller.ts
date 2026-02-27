@@ -7,7 +7,6 @@ import {
   Param,
   Delete,
   UseGuards,
-  NotFoundException,
   Req,
   Request,
   Query,
@@ -21,19 +20,14 @@ import { GetPublicBlogsDto } from './dto/getPublicblog-blog.dto';
 @Controller()
 export class BlogController {
   constructor(private readonly blogService: BlogService) { }
+
   @UseGuards(AuthGuard)
-  @Post("blog")
+  @Post('blog')
   createBlog(@Body() createBlogDto: CreateBlogDto, @Req() req) {
     const userId = req.user.id;
-    console.log(userId)
     return this.blogService.createBlog(createBlogDto, userId);
   }
 
-  // @Get("blog")
-  // findAll() {
-  //   return this.blogService.findAll();
-  // }
-  @UseGuards(AuthGuard)
   @Get('public/blog/:slug')
   async findOne(@Param('slug') slug: string, @Req() req) {
     const userId = req.user?.id;
@@ -45,17 +39,22 @@ export class BlogController {
   update(@Param('id') id: string, @Body() updateBlogDto: UpdateBlogDto) {
     return this.blogService.update(id, updateBlogDto);
   }
+
   @UseGuards(AuthGuard)
   @Delete('blog/:id')
- async  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return await this.blogService.remove(id);
   }
 
-  @UseGuards(AuthGuard)
-  @Get("public/feed")
-  async getPublicBlogs(@Query() getPublicBlogDto:GetPublicBlogsDto ){
-    return await this.blogService.findAll(getPublicBlogDto)
-
+  @Get('public/feed')
+  async getPublicBlogs(@Query() getPublicBlogDto: GetPublicBlogsDto) {
+    return await this.blogService.findAll(getPublicBlogDto);
   }
 
+  @UseGuards(AuthGuard)
+  @Get('dashboard/blogs')
+  async getUserBlogs(@Req() req) {
+    const userId = req.user.id;
+    return await this.blogService.findUserBlogs(userId);
+  }
 }

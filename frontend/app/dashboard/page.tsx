@@ -26,12 +26,10 @@ export default function DashboardPage() {
 
     const { data, isLoading } = useQuery({
         queryKey: ["my-blogs"],
-        queryFn: () => blogService.getPublicFeed({ limit: 100, offset: 0 }),
+        queryFn: () => blogService.getUserBlogs(),
     });
 
-    const blogs: Blog[] = Array.isArray(data?.data)
-        ? data.data
-        : data?.data?.data ?? [];
+    const blogs: Blog[] = Array.isArray(data?.data) ? data.data : [];
 
     const deleteMutation = useMutation({
         mutationFn: (id: string) => blogService.delete(id),

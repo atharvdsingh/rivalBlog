@@ -1,65 +1,51 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { CreateLikeDto } from './dto/create-like.dto';
-import { UpdateLikeDto } from './dto/update-like.dto';
+import { ConflictException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Prisma } from 'generated/prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class LikeService {
   constructor(private readonly prismaService: PrismaService) { }
-  async create(id: string, userId: string) {
-    try {
-      const [newLike, likesCount] = await this.prismaService.$transaction([
-        this.prismaService.like.create({
-          data: {
-            userId: userId,
-            blogId: id
-          },
-        }),
-        this.prismaService.like.count({
-          where: {
-            blogId: id
-          }
-        })
-      ]);
 
-      return {
-        ...newLike,
-        likesCount
-      };
+  async create(blogId: string, userId: string) {
+    try {
+      const newLike = await this.prismaService.like.create({
+        data: {
+          userId: userId,
+          blogId: blogId,
+        },
+      });
+
+      const likesCount = await this.prismaService.like.count({
+        where: { blogId },
+      });
+
+      return { ...newLike, likesCount };
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        throw new InternalServerErrorException("failed to like")
+        if (error.code === 'P2002') {
+          throw new ConflictException('You have already liked this blog');
+        }
       }
+      throw new InternalServerErrorException('Failed to like blog');
     }
   }
 
-  findAll() {
-    return `This action returns all like`;
-  }
+  async remove(blogId: string, userId: string) {
+    try {
+      await this.prismaService.like.deleteMany({
+        where: {
+          blogId: blogId,
+          userId: userId,
+        },
+      });
 
-  findOne(id: number) {
-    return `This action returns a #${id} like`;
-  }
+      const likesCount = await this.prismaService.like.count({
+        where: { blogId },
+      });
 
-  update(id: number, updateLikeDto: UpdateLikeDto) {
-    return `This action updates a #${id} like`;
-  }
-
-  async remove(id: string, userId: string) {
-    const [likesCount] = await this.prismaService.$transaction([
-       this.prismaService.like.create({
-        data:{
-          blogId:id,
-          userId:userId
-        }
-      }),
-      this.prismaService.like.count({
-        where:{
-          blogId:id
-        }
-      })      
-    ])
-    return likesCount
+      return { likesCount };
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to unlike blog');
+    }
   }
 }

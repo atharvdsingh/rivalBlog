@@ -8,7 +8,6 @@ const api = axios.create({
     },
 });
 
-// Attach JWT token to every outgoing request
 api.interceptors.request.use((config) => {
     if (typeof window !== "undefined") {
         const token = localStorage.getItem("token");
@@ -19,7 +18,6 @@ api.interceptors.request.use((config) => {
     return config;
 });
 
-// Handle 401 responses globally — redirect to login
 api.interceptors.response.use(
     (response) => response,
     (error) => {

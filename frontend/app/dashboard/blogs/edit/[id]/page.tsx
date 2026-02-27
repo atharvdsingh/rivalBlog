@@ -10,17 +10,13 @@ export default function EditBlogPage() {
     const params = useParams();
     const id = params.id as string;
 
-    // We need to fetch the blog data — using the feed endpoint or a dedicated one.
-    // For now, we fetch from the feed and find by id.
     const { data, isLoading } = useQuery({
         queryKey: ["blog-edit", id],
-        queryFn: () => blogService.getPublicFeed({ limit: 100, offset: 0 }),
+        queryFn: () => blogService.getUserBlogs(),
         enabled: !!id,
     });
 
-    const blogs: Blog[] = Array.isArray(data?.data)
-        ? data.data
-        : data?.data?.data ?? [];
+    const blogs: Blog[] = Array.isArray(data?.data) ? data.data : [];
     const blog = blogs.find((b) => b.id === id);
 
     if (isLoading) {

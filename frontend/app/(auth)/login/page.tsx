@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,11 @@ import { Loader2 } from "lucide-react";
 export default function LoginPage() {
     const router = useRouter();
     const setAuth = useAuthStore((s) => s.setAuth);
+    const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+
+    useEffect(() => {
+        if (isAuthenticated) router.push("/dashboard");
+    }, [isAuthenticated, router]);
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");

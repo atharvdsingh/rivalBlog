@@ -6,6 +6,7 @@ import { Heart } from "lucide-react";
 import { likeService } from "@/services/like.service";
 import { useAuthStore } from "@/store/auth-store";
 import { cn } from "@/lib/utils";
+import axios from "axios";
 
 interface LikeButtonProps {
     blogId: string;
@@ -26,21 +27,37 @@ export function LikeButton({
     const handleToggle = async () => {
         if (!isAuthenticated || loading) return;
 
+        const wasLiked = liked;
+        const prevCount = count;
+
         // Optimistic update
-        setLiked(!liked);
-        setCount(liked ? count - 1 : count + 1);
+        setLiked(!wasLiked);
+        setCount(wasLiked ? prevCount - 1 : prevCount + 1);
 
         setLoading(true);
         try {
-            if (liked) {
-                await likeService.unlike(blogId);
+            if (wasLiked) {
+                const res = await likeService.unlike(blogId);
+                setCount(res.data?.likesCount ?? (prevCount - 1));
             } else {
-                await likeService.like(blogId);
+                const res = await likeService.like(blogId);
+                setCount(res.data?.likesCount ?? (prevCount + 1));
             }
-        } catch {
-            // Rollback on error
-            setLiked(liked);
-            setCount(count);
+        } catch (error) {
+            // 409 Conflict = already liked, so toggle to unlike instead
+            if (axios.isAxiosError(error) && error.response?.status === 409 && !wasLiked) {
+                try {
+                    const res = await likeService.unlike(blogId);
+                    setLiked(false);
+                    setCount(res.data?.likesCount ?? (prevCount - 1));
+                    return;
+                } catch {
+                    // fallthrough to rollback
+                }
+            }
+            // Rollback on any other error
+            setLiked(wasLiked);
+            setCount(prevCount);
         } finally {
             setLoading(false);
         }

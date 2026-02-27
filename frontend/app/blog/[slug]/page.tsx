@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { blogService } from "@/services/blog.service";
 import { commentService } from "@/services/comment.service";
 import { LikeButton } from "@/components/common/LikeButton";
@@ -17,6 +17,7 @@ import type { Blog, Comment } from "@/lib/types";
 export default function BlogDetailPage() {
     const params = useParams();
     const slug = params.slug as string;
+    const queryClient = useQueryClient();
 
     const {
         data: blogRes,
@@ -32,7 +33,6 @@ export default function BlogDetailPage() {
 
     const {
         data: commentsRes,
-        refetch: refetchComments,
     } = useQuery({
         queryKey: ["comments", blog?.id],
         queryFn: () => commentService.getByBlogId(blog!.id),
@@ -42,6 +42,14 @@ export default function BlogDetailPage() {
     const comments: Comment[] = Array.isArray(commentsRes?.data)
         ? commentsRes.data
         : [];
+
+    const commentMutation = useMutation({
+        mutationFn: ({ blogId, content }: { blogId: string; content: string }) =>
+            commentService.create(blogId, content),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["comments", blog?.id] });
+        },
+    });
 
     if (blogLoading) {
         return (
@@ -85,7 +93,6 @@ export default function BlogDetailPage() {
 
     return (
         <article className="mx-auto max-w-3xl px-4 py-10">
-            {/* Back link */}
             <Button variant="ghost" size="sm" asChild className="mb-6">
                 <Link href="/feed">
                     <ArrowLeft className="mr-2 h-4 w-4" />
@@ -93,7 +100,6 @@ export default function BlogDetailPage() {
                 </Link>
             </Button>
 
-            {/* Header */}
             <header className="mb-8">
                 <h1 className="text-3xl font-extrabold leading-tight sm:text-4xl">
                     {blog.title}
@@ -109,12 +115,10 @@ export default function BlogDetailPage() {
                 </div>
             </header>
 
-            {/* Content */}
             <div className="prose prose-neutral max-w-none dark:prose-invert whitespace-pre-wrap leading-relaxed text-foreground">
                 {blog.content}
             </div>
 
-            {/* Like */}
             <div className="mt-8">
                 <LikeButton
                     blogId={blog.id}
@@ -125,7 +129,6 @@ export default function BlogDetailPage() {
 
             <Separator className="my-8" />
 
-            {/* Comments */}
             <section>
                 <h2 className="flex items-center gap-2 text-lg font-semibold">
                     <MessageCircle className="h-5 w-5" />
@@ -135,7 +138,9 @@ export default function BlogDetailPage() {
                 <div className="mt-4 space-y-3">
                     <CommentInput
                         blogId={blog.id}
-                        onCommentAdded={() => refetchComments()}
+                        onCommentAdded={() =>
+                            queryClient.invalidateQueries({ queryKey: ["comments", blog.id] })
+                        }
                     />
                     {comments.length === 0 ? (
                         <p className="py-4 text-center text-sm text-muted-foreground">
