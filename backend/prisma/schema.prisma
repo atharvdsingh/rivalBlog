@@ -43,9 +43,11 @@ model like{
   id String @id @default(uuid())
   userId String
   blogId String
-  blog blog @relation(references: [id],fields: [blogId])
+  blog blog @relation(references: [id],fields: [blogId], onDelete: Cascade)
   user user @relation(references: [id], fields: [userId])
   createdAt DateTime @default(now())
+
+  @@unique([userId, blogId])
 }
 
 model  comment {
@@ -53,6 +55,10 @@ model  comment {
   content String 
   userId String 
   blogId String
+  createdAt DateTime @default(now())
   user user @relation(references: [id], fields: [userId])
-  blog blog @relation(references: [id],fields: [blogId])
+  blog blog @relation(references: [id],fields: [blogId], onDelete: Cascade)
+
+  @@index([blogId])
+  @@index([createdAt])
 }
