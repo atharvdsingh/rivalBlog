@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
@@ -10,20 +20,20 @@ import { AuthGuard } from './auth.guard';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post("register")
+  @Post('register')
   create(@Body() createUserDto: CreateUserDto) {
     return this.authService.create(createUserDto);
   }
 
-    @Post("login")
-    login(@Body() loginUserDto:loginUserDto){
-      return this.authService.login(loginUserDto)
-    }
+  @Post('login')
+  login(@Body() loginUserDto: loginUserDto) {
+    return this.authService.login(loginUserDto);
+  }
 
-    @UseGuards(AuthGuard)
-  @Get("profile")
-  GetProfile(@Request() req){
-    return req.user
+  @UseGuards(AuthGuard)
+  @Get('profile')
+  GetProfile(@Request() req) {
+    return req.user;
   }
 
   @Get(':id')

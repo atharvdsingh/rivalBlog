@@ -1,17 +1,22 @@
-import { IsBoolean, IsEmpty, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import {
+  IsBoolean,
+  IsEmpty,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateBlogDto {
+  @IsString()
+  @IsNotEmpty()
+  content: string;
+  @IsString()
+  @IsNotEmpty()
+  title: string;
+  @IsBoolean()
+  IsPublished: boolean;
 
-    @IsString()
-    @IsNotEmpty()
-    content:string
-     @IsString()
-    @IsNotEmpty()
-    title:string
-    @IsBoolean()
-    IsPublished:boolean
-
-    @IsString()
-    @IsOptional()
-    summary:string
+  @IsString()
+  @IsOptional()
+  summary: string;
 }

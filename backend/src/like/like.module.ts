@@ -4,7 +4,7 @@ import { LikeController } from './like.controller';
 import { PrismaModule } from 'src/prisma/prisma.module';
 
 @Module({
-  imports:[PrismaModule],
+  imports: [PrismaModule],
   controllers: [LikeController],
   providers: [LikeService],
 })

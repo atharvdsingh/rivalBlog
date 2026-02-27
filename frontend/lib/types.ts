@@ -14,7 +14,7 @@ export interface Blog {
     summary: string | null;
     isPublished: boolean;
     createdAt: string;
-    updatedAt: string;
+    updateAt: string;
     ownerId: string;
     owner?: User;
     likes?: Like[];
@@ -54,6 +54,7 @@ export interface Comment {
     content: string;
     userId: string;
     blogId: string;
+    createdAt: string;
     user?: User;
 }
 

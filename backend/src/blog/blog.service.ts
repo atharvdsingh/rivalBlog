@@ -1,4 +1,9 @@
-import { ConflictException, Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -7,7 +12,7 @@ import { GetPublicBlogsDto } from './dto/getPublicblog-blog.dto';
 
 @Injectable()
 export class BlogService {
-  constructor(private readonly prismaSerive: PrismaService) { }
+  constructor(private readonly prismaSerive: PrismaService) {}
 
   async createBlog(createBlogDto: CreateBlogDto, ownerId: string) {
     try {
@@ -16,7 +21,10 @@ export class BlogService {
           title: createBlogDto.title,
           ownerId: ownerId,
           content: createBlogDto.content,
-          slug: createBlogDto.title.toLocaleLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
+          slug: createBlogDto.title
+            .toLocaleLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-|-$/g, ''),
           isPublished: createBlogDto.IsPublished!,
           summary: createBlogDto.summary!,
         },
@@ -27,7 +35,9 @@ export class BlogService {
           throw new ConflictException('blog with this slug already exists');
         }
       }
-      throw new InternalServerErrorException('Failed to create blog. Please try again later.');
+      throw new InternalServerErrorException(
+        'Failed to create blog. Please try again later.',
+      );
     }
   }
 
@@ -68,9 +78,16 @@ export class BlogService {
         }),
       ]);
 
-      return { data, total, limit: getPublicBlogDto.limit, offset: getPublicBlogDto.offset };
+      return {
+        data,
+        total,
+        limit: getPublicBlogDto.limit,
+        offset: getPublicBlogDto.offset,
+      };
     } catch (error) {
-      throw new InternalServerErrorException('Failed to fetch blogs. Please try again later.');
+      throw new InternalServerErrorException(
+        'Failed to fetch blogs. Please try again later.',
+      );
     }
   }
 
@@ -117,7 +134,9 @@ export class BlogService {
       throw new NotFoundException('blog not found');
     }
 
-    const isLiked = userId ? blog.likes.some((like) => like.userId === userId) : false;
+    const isLiked = userId
+      ? blog.likes.some((like) => like.userId === userId)
+      : false;
 
     return { ...blog, isLiked };
   }
@@ -128,7 +147,10 @@ export class BlogService {
       data: {
         title: updateBlogDto.title,
         content: updateBlogDto.content,
-        slug: updateBlogDto.title?.toLocaleLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
+        slug: updateBlogDto.title
+          ?.toLocaleLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-|-$/g, ''),
         isPublished: updateBlogDto.IsPublished,
       },
     });
@@ -145,7 +167,9 @@ export class BlogService {
           throw new NotFoundException('blog does not exist');
         }
       }
-      throw new InternalServerErrorException('Failed to delete blog. Please try again later.');
+      throw new InternalServerErrorException(
+        'Failed to delete blog. Please try again later.',
+      );
     }
   }
 

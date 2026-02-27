@@ -19,7 +19,7 @@ import { GetPublicBlogsDto } from './dto/getPublicblog-blog.dto';
 
 @Controller()
 export class BlogController {
-  constructor(private readonly blogService: BlogService) { }
+  constructor(private readonly blogService: BlogService) {}
 
   @UseGuards(AuthGuard)
   @Post('blog')

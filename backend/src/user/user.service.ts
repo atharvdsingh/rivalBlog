@@ -6,36 +6,31 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class UserService {
+  constructor(private readonly prisma: PrismaService) {}
 
-  constructor(private readonly prisma: PrismaService
-    
-  ){}
-
-  
   async create(createUserDto: CreateUserDto) {
     try {
       return await this.prisma.user.create({
-      data:{
-        email:createUserDto.email,
-        password:createUserDto.password
-      }
-      })
-    } catch (error  ) {
-      throw new ConflictException()
-  }
+        data: {
+          email: createUserDto.email,
+          password: createUserDto.password,
+        },
+      });
+    } catch (error) {
+      throw new ConflictException();
+    }
   }
 
-  async findOne(loginUserDto:loginUserDto)  {
+  async findOne(loginUserDto: loginUserDto) {
     return await this.prisma.user.findFirst({
-      where:{
-        email:loginUserDto.email
-      }
-    })
+      where: {
+        email: loginUserDto.email,
+      },
+    });
   }
   findAll() {
     return `This action returns all user`;
   }
-
 
   update(id: number, updateUserDto: UpdateUserDto) {
     return `This action updates a #${id} user`;

@@ -7,6 +7,6 @@ import { AuthModule } from 'src/auth/auth.module';
 @Module({
   controllers: [BlogController],
   providers: [BlogService],
-  imports:[PrismaModule,AuthModule]
+  imports: [PrismaModule, AuthModule],
 })
 export class BlogModule {}

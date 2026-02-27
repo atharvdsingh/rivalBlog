@@ -14,11 +14,17 @@ import { CommentModule } from './comment/comment.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      load:[configuration],
-       isGlobal:true,
-       cache:true 
-    }) ,
-    AuthModule, BlogModule, UserModule, PrismaModule, LikeModule, CommentModule],
+      load: [configuration],
+      isGlobal: true,
+      cache: true,
+    }),
+    AuthModule,
+    BlogModule,
+    UserModule,
+    PrismaModule,
+    LikeModule,
+    CommentModule,
+  ],
   controllers: [AppController],
   providers: [AppService, UserService],
 })
