@@ -46,8 +46,9 @@ export default function RegisterPage() {
 
         setLoading(true);
         try {
-            await authService.register({ email, password });
-            router.push("/login");
+         await authService.register({ email, password });
+         await authService.login({ email, password });
+            router.push("/dashboard");
         } catch {
             setError("Registration failed. Email may already be in use.");
         } finally {
